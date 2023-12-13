@@ -1,113 +1,142 @@
-import Image from 'next/image'
+/* eslint-disable @next/next/no-img-element */
+"use client";
+import {
+  Button,
+  FlexBox,
+  Icon,
+  Input,
+  Title,
+  Text,
+  Card,
+  CardHeader,
+  List,
+  StandardListItem,
+  Grid,
+} from "@ui5/webcomponents-react";
+import React from "react";
+import { useState } from "react";
+import axios from "axios";
+import Image from "next/image";
 
 export default function Home() {
+  const [searchInputValue, setSearchInputValue] = useState<String>("");
+  const [moviesSearched, setMoviesSearched] = useState<any>({});
+  const [selectedMovie, setSelectedMovie] = useState<any>({});
+
+  const handleSearch = () => {
+    axios
+      .get("http://localhost:3000/movie/search", {
+        params: { query: searchInputValue },
+      })
+      .then((response) => {
+        console.log("FLAG H1 ", response.data);
+        setMoviesSearched(response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error.message);
+      });
+  };
+
+  const fetchMovieDetails = async (imdbID: string) => {
+    try {
+      const response = await fetch(`http://localhost:3000/movie/details?imdbID=${imdbID}`);
+      const data = await response.json();
+      console.log(data)
+      setSelectedMovie(data);
+    } catch (error) {
+      console.error('Error fetching movie details:', error);
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main
+      className="flex min-h-screen flex-col items-center p-24"
+      style={{ width: "100%", height: "100%" }}
+    >
+      <div style={{ marginBottom: 40 }}>
+        <FlexBox justifyContent="Center" style={{ marginBottom: 10 }}>
+          <Title style={{ justifyContent: "Center" }}>Movies & Games Searcher</Title>
+        </FlexBox>
+        <FlexBox justifyContent="Center" style={{ marginBottom: 25 }}>
+          <Text>
+            Here you can search the movie or game you want and see all 
+            of it informations, reset if you want to clean the list.
+          </Text>
+        </FlexBox>
+        <FlexBox
+          alignItems="Stretch"
+          direction="Row"
+          justifyContent="Center"
+          wrap="NoWrap"
+        >
+          <Input
+            onChange={(evt: any) => {
+              setSearchInputValue(evt.target.value);
+            }}
+          />
+          <Button onClick={() => handleSearch()}>Search</Button>
+          <Button onClick={() => setMoviesSearched({})}>Reset</Button>
+        </FlexBox>
+      </div>
+
+      {moviesSearched.Search ? (
+        <>
+          <FlexBox
+            alignItems="Stretch"
+            direction="Row"
+            justifyContent="End"
+            wrap="NoWrap"
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+            {moviesSearched?.totalResults} results found
+          </FlexBox>
+          {moviesSearched?.Search.map((movie: any, key: any) => (
+            <div
+              key={key}
+              style={{
+                width: "90%",
+                marginBottom: 20,
+                padding: 20,
+                borderColor: "#999",
+                borderWidth: 2,
+                borderRadius: 8,
+              }}
+            >
+              <Grid>
+                <React.Fragment key=".0">
+                  <div
+                    data-layout-indent="XL1 L1 M1 S0"
+                    data-layout-span="XL8 L8 M8 S12"
+                  >
+                    <Title>{movie.Title}</Title>
+                    {selectedMovie.imdbID==movie.imdbID ? (
+                      <Text key={key}>
+                        {selectedMovie.Plot}
+                        <br />
+                        <br />
+                        Release date: {selectedMovie.Released}
+                        <br />
+                        Director: {selectedMovie.Director}
+                        <br />
+                        IMDB rating: {selectedMovie.imdbRating}
+                      </Text>
+                    ) : (
+                      <Button key={key} onClick={() => fetchMovieDetails(movie.imdbID)}>Show more infos</Button>
+                      )}
+                    
+                  </div>
+                  <div>
+                    <img
+                      src={movie.Poster}
+                      alt={movie.Title}
+                      style={{ height: "300px", width: "auto", margin: "auto" }}
+                    />
+                  </div>
+                </React.Fragment>
+              </Grid>
+            </div>
+          ))}
+        </>
+      ) : null}
     </main>
-  )
+  );
 }

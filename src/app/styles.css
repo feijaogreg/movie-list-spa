@@ -1,0 +1,32 @@
+
+.movies-grid {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .movies-grid li {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .movies-grid img {
+    width: 100%;
+    cursor: pointer;
+  }
+  
+  .modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    outline: none;
+  }
+  
+  .overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
